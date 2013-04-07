@@ -1,0 +1,29 @@
+{
+    "name": "nitecon/zfcuser-ldap",
+    "description": "Zend Framework 2 ZfcUser LDAP Authentication",
+    "type": "library",
+    "keywords": ["zf2","zfcuser","ldap"],
+    "homepage": "https://github.com/Nitecon/zfcuser-ldap.git",
+    "license": "New BSD License",
+    "authors": [
+        {
+            "name": "Will Hattingh",
+            "email": "w.hattingh@nitecon.com",
+            "homepage": "http://www.nitecon.com/",
+            "role": "Master"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "2.*",
+        "zf-commons/zfc-user": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "ZfcUserLdap": "src/"
+        },
+        "classmap": [
+            "Module.php"
+        ]
+    }
+}
