@@ -1,4 +1,4 @@
-DBSessionStorage
+ZfcUserLdap
 ================
 
 Zend Framework ZfcUser Extension to provide LDAP Authentication
@@ -48,6 +48,12 @@ The following steps are necessary to get this module working
 Please note that based on the above configuration example it shows 2 servers being
 used which will allow automatic failover if one server is down.  This is NOT required.
 You are only required to specify one server, so the 'server2' array can be removed.
+
+The application will currently also log all LDAP related queries to data/logs/ldap.log
+If you do not have a data directory please create one the application will automatically
+try to create it however if it can't create the folder then it will error out.  This will
+be changed in the future to allow the user to specify log location and also disable logging
+completely.
 
 ## ZfcUser Configuration
 
