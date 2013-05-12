@@ -55,6 +55,18 @@ try to create it however if it can't create the folder then it will error out.  
 be changed in the future to allow the user to specify log location and also disable logging
 completely.
 
+## Application Configuration
+Please make sure to enable both ZfcUser and ZfcUserLdap in your application.config.php as
+shown below
+
+<pre class="brush:php">
+  array(
+    'ZfcUser',
+    'ZfcUserLdap',
+    /* It's important to load ZfcUser before ZfcUserLdap as ZfcUserLdap is an addon to ZfcUser */
+  );
+</pre>
+
 ## ZfcUser Configuration
 
 For the initial release please make sure to set the following settings in your
