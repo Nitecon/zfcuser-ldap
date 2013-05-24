@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the ZfcUserLdap Module (https://github.com/Nitecon/zfcuser-ldap.git)
  *
@@ -7,6 +8,7 @@
  * For the full copyright and license information, please view
  * the file LICENSE.txt that was distributed with this source code.
  */
+
 namespace ZfcUserLdap;
 
 use Zend\Mvc\ModuleRouteListener;
@@ -35,6 +37,9 @@ class Module {
 
     public function getServiceConfig() {
         return array(
+            'invokables' => array(
+                'ZfcUserLdap\Authentication\Adapter\Ldap' => 'ZfcUserLdap\Authentication\Adapter\Ldap',
+            ),
             'factories' => array(
                 'zfcuser_ldap_service' => 'ZfcUserLdap\ServiceFactory\Ldap',
                 'ldap_interface' => 'ZfcUserLdap\ServiceFactory\LdapServiceFactory',
