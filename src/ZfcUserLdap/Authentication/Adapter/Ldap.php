@@ -17,6 +17,7 @@ use ZfcUserLdap\Mapper\User as UserMapperInterface;
 use ZfcUser\Options\AuthenticationOptionsInterface;
 use ZfcUser\Authentication\Adapter\ChainableAdapter as AdapterChain;
 use ZfcUser\Authentication\Adapter\AdapterChainEvent as AuthEvent;
+use Zend\Session\Container;
 
 class Ldap implements AdapterChain, ServiceManagerAwareInterface {
 
@@ -113,6 +114,8 @@ class Ldap implements AdapterChain, ServiceManagerAwareInterface {
         $this->setSatisfied(true);
         $storage = $this->getStorage()->read();
         $storage['identity'] = $e->getIdentity();
+        $session = new Container('ZfcUserLdap');
+        $session->offsetSet('ldapObj', $this->getServiceManager()->get('ldap_interface')->findById($userObject->getId()));
         $this->getStorage()->write($storage);
         $e->setCode(AuthenticationResult::SUCCESS)->setMessages(array('Authentication successful.'));
     }
