@@ -119,7 +119,7 @@ class LdapInterface {
             $this->log($msg);
         }
     }
-
+    
     function authenticate($username, $password) {
         try {
             $this->bind();

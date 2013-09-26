@@ -41,6 +41,7 @@ class Module {
                 'ZfcUserLdap\Authentication\Adapter\Ldap' => 'ZfcUserLdap\Authentication\Adapter\Ldap',
             ),
             'factories' => array(
+                'ZfcUserLdap\Provider\Identity\LdapIdentityProvider' => 'ZfcUserLdap\Service\LdapIdentityProviderServiceFactory',
                 'zfcuser_ldap_service' => 'ZfcUserLdap\ServiceFactory\Ldap',
                 'ldap_interface' => 'ZfcUserLdap\ServiceFactory\LdapServiceFactory',
                 'zfcuser_module_options' => function ($sm) {
