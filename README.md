@@ -11,7 +11,9 @@ Zend Framework ZfcUser Extension to provide LDAP Authentication
 
 ## Rebuild notice
 If you do not feel like testing the WIP, please make sure to use the current
-release version: 1.1.0 as mentioned below in the setup for composer.
+release version: 1.1.0 as mentioned below in the setup for composer.  Although
+I will try to keep the master branch as stable as possible it's always
+possible that I can break your stuff.
 
 ## WIP
 The entire module has been re-built from scratch, I have tried my best 
