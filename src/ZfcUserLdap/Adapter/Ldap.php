@@ -1,30 +1,54 @@
 <?php
+
 /**
- * This file is part of the ZfcUserLdap Module (https://github.com/Nitecon/zfcuser-ldap.git)
- *
- * Copyright (c) 2013 Will Hattingh (https://github.com/Nitecon/zfcuser-ldap)
+ * Copyright (c) 2013 Will Hattingh (https://github.com/Nitecon
  *
  * For the full copyright and license information, please view
  * the file LICENSE.txt that was distributed with this source code.
+ * 
+ * @author Will Hattingh <w.hattingh@nitecon.com>
+ *
+ * 
  */
-namespace ZfcUserLdap\Service;
 
-use Zend\Log\Logger;
-use Zend\Log\Writer\Stream as LogWriter;
+namespace ZfcUserLdap\Adapter;
+
 use Zend\Authentication\AuthenticationService;
 use Zend\Authentication\Adapter\Ldap as AuthAdapter;
 use Zend\Ldap\Exception\LdapException;
 
-class LdapInterface {
+class Ldap {
 
     private $config;
-    protected $ldap;
-    protected $entity;
-    protected $active_server;
-    protected $error;
 
-    public function __construct($config) {
+    /** @var Zend\Ldap\Ldap */
+    protected $ldap;
+
+    /**
+     * Array of server configuration options, active server is
+     * set to the first server that is able to bind successfully 
+     * @var array */
+    protected $active_server;
+
+    /**
+     * An array of error messages.
+     * @var array
+     */
+    protected $error = array();
+
+    /**
+     * Log writer
+     * @var Zend\Log\Logger
+     */
+    protected $logger;
+
+    /** @var bool */
+    protected $logEnabled;
+
+    public function __construct($config, $logger, $logEnabled) {
         $this->config = $config;
+        $this->logger = $logger;
+        $this->logEnabled = $logEnabled;
     }
 
     /**
@@ -33,20 +57,13 @@ class LdapInterface {
      * @param type $log_level EMERG=0, ALERT=1, CRIT=2, ERR=3, WARN=4, NOTICE=5, INFO=6, DEBUG=7
      */
     public function log($msg, $priority = 5) {
-        $log_dir = "data/logs";
-        if (!is_dir($log_dir)) {
-            try {
-                mkdir($log_dir);
-            } catch (Exception $exc) {
-                echo "<h1>Could not create log directory " . $log_dir . "</h1>";
-                echo $exc->getMessage();
+        if ($this->logEnabled) {
+            if (!is_string($msg)) {
+                $this->logger->log($priority, var_export($msg, true));
+            } else {
+                $this->logger->log($priority, $msg);
             }
         }
-        $logger = new Logger;
-        $writer = new LogWriter($log_dir . '/ldap.log');
-        $logger->addWriter($writer);
-        Logger::registerErrorHandler($logger);
-        $logger->log($priority, $msg);
     }
 
     public function bind() {
@@ -60,18 +77,14 @@ class LdapInterface {
                 $this->ldap->bind();
                 $this->active_server = $server;
             } catch (LdapException $exc) {
-                $this->error = $exc->getMessage();
+                $this->error[] = $exc->getMessage();
                 continue;
             }
         }
     }
 
     public function findByUsername($username) {
-        try {
-            $this->bind();
-        } catch (\Exception $exc) {
-            return $this->error;
-        }
+        $this->bind();
         $entryDN = "uid=$username," . $this->active_server['baseDn'];
         try {
             $hm = $this->ldap->getEntry($entryDN);
@@ -82,11 +95,7 @@ class LdapInterface {
     }
 
     public function findByEmail($email) {
-        try {
-            $this->bind();
-        } catch (\Exception $exc) {
-            return $this->error;
-        }
+        $this->bind();
         try {
             $hm = $this->ldap->search("mail=$email", $this->active_server['baseDn'], \Zend\Ldap\Ldap::SEARCH_SCOPE_ONE);
             foreach ($hm as $item) {
@@ -102,45 +111,29 @@ class LdapInterface {
     }
 
     public function findById($id) {
-        try {
-            $this->bind();
-        } catch (\Exception $exc) {
-            return $this->error;
-        }
+        $this->bind();
         try {
             $hm = $this->ldap->search("uidnumber=$id", $this->active_server['baseDn'], \Zend\Ldap\Ldap::SEARCH_SCOPE_ONE);
-            foreach ($hm as $item) {
-                $this->log($item);
-                return $item;
-            }
-            return FALSE;
+            $this->log($hm);
+            return $hm;
         } catch (LdapException $exc) {
             $msg = $exc->getMessage();
             $this->log($msg);
         }
     }
-    
+
     function authenticate($username, $password) {
-        try {
-            $this->bind();
-        } catch (\Exception $exc) {
-            return $this->error;
-        }
+        $this->bind();
         $options = $this->config;
         $auth = new AuthenticationService();
-        try {
-            $adapter = new AuthAdapter($options, $username, $password);
-            $result = $auth->authenticate($adapter);
-            if ($result->isValid()) {
-                $this->log("$username logged in successfully!");
-                return TRUE;
-            } else {
-                $messages = $result->getMessages();
-                return $messages;
-            }
-        } catch (LdapException $exc) {
-            $msg = $exc->getMessage();
-            $this->log($msg);
+        $adapter = new AuthAdapter($options, $username, $password);
+        $result = $auth->authenticate($adapter);
+        if ($result->isValid()) {
+            $this->log("$username logged in successfully!");
+            return TRUE;
+        } else {
+            $messages = $result->getMessages();
+            return $messages;
         }
     }
 

@@ -1,0 +1,14 @@
+<?php
+
+return array(
+    'ZfcUserLdap' => array(
+        'logging' => array(
+            'log_dir' => 'data/logs',
+            'log_filename' => 'ldap.log',
+            'log_enabled' => \TRUE,
+        ),
+        'auto_insertion' => array(
+            'enabled' => \TRUE,
+        )
+    ),
+);

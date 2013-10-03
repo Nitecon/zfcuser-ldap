@@ -9,17 +9,52 @@ Zend Framework ZfcUser Extension to provide LDAP Authentication
 - Provides automatic failover between configured LDAP Servers
 - Provides an identity provider for BjyAuthorize
 
+## Rebuild notice
+If you do not feel like testing the WIP, please make sure to use the current
+release version: 1.1.0 as mentioned below in the setup for composer.
+
 ## WIP
-The current items that I'm working on is a new storage method for ZfcUserLdap so that it can cache the
-user object more efficiently.  Ldap and especially openldap is generally extremely fast however there 
-are times where it may lag so the idea is to cache the user object while the user is logged in and destroy
-the cache on session destroy.
+The entire module has been re-built from scratch, I have tried my best 
+to keep backwards compatability, however to get some of the fixes in I 
+did have to break the current release version.
+
+What breaks?  You now need to have a column in your zfcuser user table
+`raw_ldap_obj`  I currently have this set to a blob right now as my ldap user
+does not fit within text or longtext.  Beyond that there is a few new things.
+
+Under the module (in your vendor directory) you will find a new config file 
+`zfcuserldap.global.php.dist`  You need to either copy & rename this file to
+`config/autoload/zfcuser.global.php` or add it to your own global file.
+The file includes new configuration settings for the module, it also includes
+a new feature called: `auto_insertion`.  If auto insertion is enabled (default)
+then when an authentication is triggered *AND* successful the user will be added
+to your zfcuser user table automatically.  If you decide to disable this then
+you can still use the module however you will have to create a user in your db
+table first.  This gives additional restrictions that weren't previously possible
+and only available through bjyauthorize roles.
+
+Another fairly big change is that the module now features a proper chain auth
+adapter, and adjustable entity.  Where before you had to set: `'auth_adapters' => array( 100 => 'ZfcUserLdap\Authentication\Adapter\Ldap' ),`
+you can now more efficiently have something like: `'auth_adapters' => array( 110 => 'ZfcUserLdap\Authentication\Adapter\LdapAuth', 100 => 'ZfcUser\Authentication\Adapter\Db' ),`
+Please keep in mind that the password is not stored in the database as I'm partial
+to allowing that to happen so if you disable the zfcuserldap your user still exists
+however you would need to reset the password.
+
+Due to it now running on a db with insertions it also means that you have to actually
+specify the user entity to be used as mentioned 2 paragraphs ago!  By default you
+can set the following for your zfcuser configuration: `'user_entity_class' => 'ZfcUserLdap\Entity\User',`
+
+You could always override the entity but please keep in mind that you will need
+to include the rawLdapObj property with it's getter/setter in your entity as well as the associated table column `raw_ldap_obj`
+
+BjyAuthorize is not affected by the change and you should be able to use the
+identity provider as you had it before.
 
 ## Setup
 
 The following steps are necessary to get this module working
 
-  1. Run `php composer.phar require nitecon/zfcuser-ldap:dev-master`
+  1. Run `php composer.phar require nitecon/zfcuser-ldap:1.1.0`
   2. Add `ZfcUserLdap` to the enabled modules list (Requires ZfcUser to be activated also)
   3. Add Zend Framework LDAP configuration to your autoload with key 'ldap' based on:
      http://framework.zend.com/manual/2.1/en/modules/zend.ldap.introduction.html

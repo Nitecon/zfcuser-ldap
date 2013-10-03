@@ -16,15 +16,14 @@ use ZfcUserLdap\Provider\Identity\LdapIdentityProvider;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class LdapIdentityProviderServiceFactory implements FactoryInterface {
+class LdapIdentityProviderFactory implements FactoryInterface {
 
     public function createService(ServiceLocatorInterface $serviceLocator) {
-        /* @var $userService \ZfcUser\Service\User */
-        $userService = $serviceLocator->get('zfcuser_user_service');
+        $authService = $serviceLocator->get('zfcuser_auth_service');
         //$serviceLocator->get('zfcuser_auth_service');
         $config      = $serviceLocator->get('BjyAuthorize\Config');
 
-        $provider = new LdapIdentityProvider($userService,$config);
+        $provider = new LdapIdentityProvider($authService,$config);
 
         $provider->setDefaultRole($config['default_role']);
 

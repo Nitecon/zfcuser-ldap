@@ -13,12 +13,12 @@
 namespace ZfcUserLdap\Provider\Identity;
 use BjyAuthorize\Exception\InvalidRoleException;
 use Zend\Permissions\Acl\Role\RoleInterface;
-use Zend\Session\Container;
+
 class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderInterface{
     /**
-     * @var User
+     * @var \Zend\Authentication\AuthenticationService
      */
-    protected $userService;
+    protected $authService;
 
     /**
      * @var string|\Zend\Permissions\Acl\Role\RoleInterface
@@ -27,33 +27,36 @@ class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderIn
     
     protected $config;
     /**
+     * @param \Zend\Db\Adapter\Adapter $adapter
      * @param \ZfcUser\Service\User    $userService
+     * @param array $config;
      */
-    public function __construct($userService,$config)
-    {
-        $this->userService = $userService;
+    public function __construct($authService,$config){
+
+        $this->authService = $authService;
         $this->config = $config;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getIdentityRoles()
-    {
-        $authService = $this->userService;
+    public function getIdentityRoles(){
         $definedRoles = $this->config['role_providers']['BjyAuthorize\Provider\Role\Config']['user']['children'];
         $roleKey = $this->config['ldap_role_key'];
         
         
-        if (! $authService->getAuthService()->hasIdentity()) {
+        if (! $this->authService->hasIdentity()) {
             return array($this->getDefaultRole());
         }
-        $session = new Container('ZfcUserLdap');
-        if (!$session->offsetExists('ldapObj')){
+        $rawObj = $this->authService->getIdentity()->getRawLdapObj();
+        $data = @unserialize($rawObj);
+        if ($data === false) {
             return array($this->getDefaultRole());
         }
-        
-        $user = $session->offsetGet('ldapObj');
+        $user = unserialize($rawObj);
+        if (is_null($user) || !is_array($user)){
+            return array($this->getDefaultRole());
+        }
         $roles     = array('user');
         foreach ($user[$roleKey] as $role) {
             if (isset($definedRoles[$role]))

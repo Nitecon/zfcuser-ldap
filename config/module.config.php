@@ -9,5 +9,19 @@
  * the file LICENSE.txt that was distributed with this source code.
  */
 return array(
-    
+    'service_manager' => array(
+        'invokables' => array(
+            'ZfcUserLdap\Adapter\Ldap' => 'ZfcUserLdap\Adapter\Ldap',
+        ),
+        'aliases' => array(
+        ),
+        'factories' => array(
+            'ZfcUserLdap\Config' => 'ZfcUserLdap\ServiceFactory\ZfcUserLdapConfigFactory',
+            'ZfcUserLdap\LdapAdapter' => 'ZfcUserLdap\ServiceFactory\LdapAdapterFactory',
+            'ZfcUserLdap\LdapConfig' => 'ZfcUserLdap\ServiceFactory\LdapConfigFactory',
+            'ZfcUserLdap\Logger' => 'ZfcUserLdap\ServiceFactory\LoggerAdapterFactory',
+            'ZfcUserLdap\Mapper' => 'ZfcUserLdap\ServiceFactory\UserMapperFactory',
+            'ZfcUserLdap\Provider\Identity\LdapIdentityProvider' => 'ZfcUserLdap\Service\LdapIdentityProviderFactory',
+        )
+    ),
 );
