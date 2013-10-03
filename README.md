@@ -8,6 +8,10 @@ Zend Framework ZfcUser Extension to provide LDAP Authentication
 - Allows login by username & email address
 - Provides automatic failover between configured LDAP Servers
 - Provides an identity provider for BjyAuthorize
+ 
+## TODO / In Progress
+- Add ability to register a user in ldap
+- Allow password resets in ldap
 
 ## Rebuild notice
 If you do not feel like testing the WIP, please make sure to use the current
