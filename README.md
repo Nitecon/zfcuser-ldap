@@ -8,10 +8,16 @@ Zend Framework ZfcUser Extension to provide LDAP Authentication
 - Allows login by username & email address
 - Provides automatic failover between configured LDAP Servers
 - Provides an identity provider for BjyAuthorize
+ 
+## TODO / In Progress
+- Add ability to register a user in ldap
+- Allow password resets in ldap
 
 ## Rebuild notice
 If you do not feel like testing the WIP, please make sure to use the current
-release version: 1.1.0 as mentioned below in the setup for composer.
+release version: 1.1.0 as mentioned below in the setup for composer.  Although
+I will try to keep the master branch as stable as possible it's always
+possible that I can break your stuff.
 
 ## WIP
 The entire module has been re-built from scratch, I have tried my best 
@@ -34,15 +40,25 @@ table first.  This gives additional restrictions that weren't previously possibl
 and only available through bjyauthorize roles.
 
 Another fairly big change is that the module now features a proper chain auth
-adapter, and adjustable entity.  Where before you had to set: `'auth_adapters' => array( 100 => 'ZfcUserLdap\Authentication\Adapter\Ldap' ),`
-you can now more efficiently have something like: `'auth_adapters' => array( 110 => 'ZfcUserLdap\Authentication\Adapter\LdapAuth', 100 => 'ZfcUser\Authentication\Adapter\Db' ),`
+adapter, and adjustable entity.  Where before you had to set: 
+<pre class="brush:php">'auth_adapters' => array( 
+    100 => 'ZfcUserLdap\Authentication\Adapter\Ldap' ),
+</pre>
+you can now more efficiently have something like: 
+<pre class="brush:php">'auth_adapters' => array( 
+    110 => 'ZfcUserLdap\Authentication\Adapter\LdapAuth', 
+    100 => 'ZfcUser\Authentication\Adapter\Db' ),
+</pre>
 Please keep in mind that the password is not stored in the database as I'm partial
 to allowing that to happen so if you disable the zfcuserldap your user still exists
 however you would need to reset the password.
 
 Due to it now running on a db with insertions it also means that you have to actually
 specify the user entity to be used as mentioned 2 paragraphs ago!  By default you
-can set the following for your zfcuser configuration: `'user_entity_class' => 'ZfcUserLdap\Entity\User',`
+can set the following for your zfcuser configuration: 
+<pre class="brush:php">
+    'user_entity_class' => 'ZfcUserLdap\Entity\User',
+</pre>
 
 You could always override the entity but please keep in mind that you will need
 to include the rawLdapObj property with it's getter/setter in your entity as well as the associated table column `raw_ldap_obj`
