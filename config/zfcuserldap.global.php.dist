@@ -6,6 +6,7 @@ return array(
             'log_dir' => 'data/logs',
             'log_filename' => 'ldap.log',
             'log_enabled' => \TRUE,
+            'log_level' => 5 /* EMERG=0, ALERT=1, CRIT=2, ERR=3, WARN=4, NOTICE=5, INFO=6, DEBUG=7 */
         ),
         'auto_insertion' => array(
             'enabled' => \TRUE,
