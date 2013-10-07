@@ -16,7 +16,7 @@ namespace ZfcUserLdap\Adapter;
 use Zend\Authentication\AuthenticationService;
 use Zend\Authentication\Adapter\Ldap as AuthAdapter;
 use Zend\Ldap\Exception\LdapException;
-use Zend\Ldap\Ldap;
+use Zend\Ldap\Ldap as ZendLdap;
 
 class Ldap
 {
@@ -79,7 +79,7 @@ class Ldap
         foreach ($options as $server) {
             $this->log("Attempting bind with ldap");
             try {
-                $this->ldap = new \Zend\Ldap\Ldap($server);
+                $this->ldap = new ZendLdap($server);
                 $this->ldap->bind();
                 $this->log("Bind successful setting active server.");
                 $this->active_server = $server;
@@ -110,7 +110,7 @@ class Ldap
         $this->bind();
         $this->log("Attempting to search ldap by email for $email against the active ldap server");
         try {
-            $hm = $this->ldap->search("mail=$email", $this->active_server['baseDn'], Ldap::SEARCH_SCOPE_ONE);
+            $hm = $this->ldap->search("mail=$email", $this->active_server['baseDn'], ZendLdap::SEARCH_SCOPE_ONE);
             $this->log("Raw Ldap Object: " . var_export($hm, true), 7);
             foreach ($hm as $item) {
                 $this->log($item);
@@ -129,7 +129,7 @@ class Ldap
         $this->bind();
         $this->log("Attempting to search ldap by uidnumber for $id against the active ldap server");
         try {
-            $hm = $this->ldap->search("uidnumber=$id", $this->active_server['baseDn'], Ldap::SEARCH_SCOPE_ONE);
+            $hm = $this->ldap->search("uidnumber=$id", $this->active_server['baseDn'], ZendLdap::SEARCH_SCOPE_ONE);
             $this->log("Raw Ldap Object: " . var_export($hm, true), 7);
             foreach ($hm as $item) {
                 $this->log($item);
