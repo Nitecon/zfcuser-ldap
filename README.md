@@ -1,9 +1,11 @@
 ZfcUserLdap
 ================
 
-[![Build Status](https://travis-ci.org/Nitecon/zfcuser-ldap.png?branch=master)](https://travis-ci.org/Nitecon/zfcuser-ldap)
+[![Build Status](https://travis-ci.org/Nitecon/zfcuser-ldap.png?branch=master)](https://travis-ci.org/Nitecon/zfcuser-ldap) [![Latest Stable Version](https://poser.pugx.org/nitecon/zfcuser-ldap/v/stable.png)](https://packagist.org/packages/nitecon/zfcuser-ldap)
 
 Zend Framework ZfcUser Extension to provide LDAP Authentication
+
+
 
 ## Features
 - Provides an adapter chain for LDAP authentication.
