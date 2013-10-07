@@ -26,23 +26,25 @@ class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderIn
     protected $defaultRole;
     
     protected $config;
+    protected $bjyConfig;
     /**
-     * @param \Zend\Db\Adapter\Adapter $adapter
      * @param \ZfcUser\Service\User    $userService
      * @param array $config;
+     * @param array $bjyConfig;
      */
-    public function __construct($authService,$config){
-
+    public function __construct($authService,array $config, array $bjyConfig){
+        
         $this->authService = $authService;
         $this->config = $config;
+        $this->bjyConfig = $bjyConfig;
     }
 
     /**
      * {@inheritDoc}
      */
     public function getIdentityRoles(){
-        $definedRoles = $this->config['role_providers']['BjyAuthorize\Provider\Role\Config']['user']['children'];
-        $roleKey = $this->config['ldap_role_key'];
+        $definedRoles = $this->bjyConfig['role_providers']['BjyAuthorize\Provider\Role\Config']['user']['children'];
+        $roleKey = $this->config['identity_providers']['ldap_role_key'];
         
         
         if (! $this->authService->hasIdentity()) {

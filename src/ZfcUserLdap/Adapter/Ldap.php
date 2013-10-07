@@ -72,9 +72,11 @@ class Ldap {
          * if no active servers are available then we will use the error msg
          */
         foreach ($options as $server) {
+            $this->log("Attempting bind with ldap");
             try {
                 $this->ldap = new \Zend\Ldap\Ldap($server);
                 $this->ldap->bind();
+                $this->log("Bind successful setting active server.");
                 $this->active_server = $server;
             } catch (LdapException $exc) {
                 $this->error[] = $exc->getMessage();
@@ -86,8 +88,11 @@ class Ldap {
     public function findByUsername($username) {
         $this->bind();
         $entryDN = "uid=$username," . $this->active_server['baseDn'];
+        $this->log("Attempting to get username entry: $entryDN against the active ldap server");
         try {
             $hm = $this->ldap->getEntry($entryDN);
+            $this->log("Raw Ldap Object: ".var_export($hm,true),7);
+            $this->log("Username entry lookup response: ".var_export($hm,true));
             return $hm;
         } catch (LdapException $exc) {
             return $exc->getMessage();
@@ -96,8 +101,10 @@ class Ldap {
 
     public function findByEmail($email) {
         $this->bind();
+        $this->log("Attempting to search ldap by email for $email against the active ldap server");
         try {
             $hm = $this->ldap->search("mail=$email", $this->active_server['baseDn'], \Zend\Ldap\Ldap::SEARCH_SCOPE_ONE);
+            $this->log("Raw Ldap Object: ".var_export($hm,true),7);
             foreach ($hm as $item) {
                 $this->log($item);
                 return $item;
@@ -112,10 +119,15 @@ class Ldap {
 
     public function findById($id) {
         $this->bind();
+        $this->log("Attempting to search ldap by uidnumber for $id against the active ldap server");
         try {
             $hm = $this->ldap->search("uidnumber=$id", $this->active_server['baseDn'], \Zend\Ldap\Ldap::SEARCH_SCOPE_ONE);
-            $this->log($hm);
-            return $hm;
+            $this->log("Raw Ldap Object: ".var_export($hm,true),7);
+            foreach ($hm as $item) {
+                $this->log($item);
+                return $item;
+            }
+            return \FALSE;
         } catch (LdapException $exc) {
             $msg = $exc->getMessage();
             $this->log($msg);
@@ -126,6 +138,7 @@ class Ldap {
         $this->bind();
         $options = $this->config;
         $auth = new AuthenticationService();
+        $this->log("Attempting to authenticate $username");
         $adapter = new AuthAdapter($options, $username, $password);
         $result = $auth->authenticate($adapter);
         if ($result->isValid()) {
@@ -133,6 +146,7 @@ class Ldap {
             return TRUE;
         } else {
             $messages = $result->getMessages();
+            $this->log("$username AUTHENTICATION FAILED!, error output: ".var_export($messages,true));
             return $messages;
         }
     }

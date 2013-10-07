@@ -2,6 +2,9 @@
 
 return array(
     'ZfcUserLdap' => array(
+        'identity_providers'=>array(
+            'ldap_role_key' => 'objectclass',
+        ),
         'logging' => array(
             'log_dir' => 'data/logs',
             'log_filename' => 'ldap.log',
@@ -10,6 +13,7 @@ return array(
         ),
         'auto_insertion' => array(
             'enabled' => \TRUE,
+            'auto_update'   => \TRUE,
         )
     ),
 );

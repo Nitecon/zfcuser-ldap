@@ -13,79 +13,51 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
     protected $tableName = 'user';
 
     public function findByEmail($email) {
-        $select = $this->getSelect()
-                ->where(array('email' => $email));
-
-        $entity = $this->select($select,$this->getEntity(),new HydratorInterface())->current();
-        //$d = new \Zend\Debug\Debug();$d->dump($entity);die;
+        $select = $this->getSelect()->where(array('email' => $email));
+        $entity = $this->select($select, $this->getEntity(), new HydratorInterface())->current();
         if (is_object($entity) && strlen($entity->getUsername()) > 0) {
             $this->getEventManager()->trigger('find', $this, array('entity' => $entity));
         } else {
             $zulConfig = $this->getServiceManager()->get('ZfcUserLdap\Config');
             if ($zulConfig['auto_insertion']['enabled']) {
-                $entity = $this->getEntity();
                 $ldapAdapter = $this->getServiceManager()->get('ZfcUserLdap\LdapAdapter');
-                $ldapObj = $ldapAdapter->findByEmail($email);
-                if (isset($ldapObj['uid']['0'])) {
-                    $entity->setUsername($ldapObj['uid']['0']);
-                    $entity->setDisplayName($ldapObj['cn']['0']);
-                    $entity->setEmail($ldapObj['mail']['0']);
-                    $entity->setPassword(md5('HandledByLdap'));
-                    $entity->setRawLdapObj(serialize($ldapObj));
-                    $this->insert($entity, $this->tableName, new HydratorInterface());
-                }
+                $ldapObject = $ldapAdapter->findByEmail($email);
+                $this->newEntity($ldapObject);
             }
         }
         /* Now we select again so that it provides us with the ID as well
          * as assurance that the user made it into the database
          */
-        $selectVerfify = $this->getSelect()
-                ->where(array('email' => $email));
-
-        $verifiedEntity = $this->select($selectVerfify,$this->getEntity(),new HydratorInterface())->current();
+        $selectVerfify = $this->getSelect()->where(array('email' => $email));
+        $verifiedEntity = $this->select($selectVerfify, $this->getEntity(), new HydratorInterface())->current();
         $this->getEventManager()->trigger('find', $this, array('entity' => $verifiedEntity));
         return $entity;
     }
 
     public function findByUsername($username) {
-        $select = $this->getSelect()
-                ->where(array('username' => $username));
-
-        $entity = $this->select($select,$this->getEntity(),new HydratorInterface())->current();
-        //$d = new \Zend\Debug\Debug();$d->dump($entity);die;
+        $select = $this->getSelect()->where(array('username' => $username));
+        $entity = $this->select($select, $this->getEntity(), new HydratorInterface())->current();
         if (is_object($entity) && strlen($entity->getUsername()) > 0) {
             $this->getEventManager()->trigger('find', $this, array('entity' => $entity));
         } else {
             $zulConfig = $this->getServiceManager()->get('ZfcUserLdap\Config');
             if ($zulConfig['auto_insertion']['enabled']) {
-                $entity = $this->getEntity();
                 $ldapAdapter = $this->getServiceManager()->get('ZfcUserLdap\LdapAdapter');
-                $ldapObj = $ldapAdapter->findByUsername($username);
-                if (isset($ldapObj['uid']['0'])) {
-                    $entity->setUsername($ldapObj['uid']['0']);
-                    $entity->setDisplayName($ldapObj['cn']['0']);
-                    $entity->setEmail($ldapObj['mail']['0']);
-                    $entity->setPassword(md5('HandledByLdap'));
-                    $entity->setRawLdapObj(serialize($ldapObj));
-                    $this->insert($entity, $this->tableName, new HydratorInterface());
-                }
+                $ldapObject = $ldapAdapter->findByUsername($username);
+                $this->newEntity($ldapObject);
             }
         }
         /* Now we select again so that it provides us with the ID as well
          * as assurance that the user made it into the database
          */
-        $selectVerfify = $this->getSelect()
-                ->where(array('username' => $username));
-
-        $verifiedEntity = $this->select($selectVerfify,$this->getEntity(),new HydratorInterface())->current();
+        $selectVerfify = $this->getSelect()->where(array('username' => $username));
+        $verifiedEntity = $this->select($selectVerfify, $this->getEntity(), new HydratorInterface())->current();
         $this->getEventManager()->trigger('find', $this, array('entity' => $verifiedEntity));
         return $entity;
     }
 
     public function findById($id) {
-        $select = $this->getSelect()
-                ->where(array('user_id' => $id));
-
+        $select = $this->getSelect()->where(array('user_id' => $id));
         $entity = $this->select($select)->current();
         $this->getEventManager()->trigger('find', $this, array('entity' => $entity));
         return $entity;
@@ -137,5 +109,28 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         $entityClass = $options->getUserEntityClass();
         return new $entityClass;
     }
-
+    
+    public function newEntity($ldapObject) {
+        $entity = $this->getEntity();
+        if (isset($ldapObject['uid']['0'])) {
+            $entity->setUsername($ldapObject['uid']['0']);
+            $entity->setDisplayName($ldapObject['cn']['0']);
+            $entity->setEmail($ldapObject['mail']['0']);
+            $entity->setPassword(md5('HandledByLdap'));
+            $entity->setRoles(getLdapRoles($ldapObject));
+            $this->insert($entity, $this->tableName, new HydratorInterface());
+        }
+    }
+    public function getLdapRoles($ldapObject){
+        $roles = array();
+        $config = $this->getServiceManager()->get('ZfcUserLdap\Config');
+        $roleKey = $config['identity_providers']['ldap_role_key'];
+        
+        foreach ($ldapObject[$roleKey] as $role) {
+            if (in_array($role, $config['identity_providers']['usable_roles'])){
+                $roles[] = $role;
+            }
+        }
+        return $roles;
+    }
 }

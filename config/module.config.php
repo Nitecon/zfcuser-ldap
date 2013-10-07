@@ -22,6 +22,7 @@ return array(
             'ZfcUserLdap\Logger' => 'ZfcUserLdap\ServiceFactory\LoggerAdapterFactory',
             'ZfcUserLdap\Mapper' => 'ZfcUserLdap\ServiceFactory\UserMapperFactory',
             'ZfcUserLdap\Provider\Identity\LdapIdentityProvider' => 'ZfcUserLdap\Service\LdapIdentityProviderFactory',
+            'ZfcUserLdap\ZfcRbacIdentityProvider' => 'ZfcUserLdap\ServiceFactory\ZfcRbacIdentityProviderFactory',
         )
     ),
 );

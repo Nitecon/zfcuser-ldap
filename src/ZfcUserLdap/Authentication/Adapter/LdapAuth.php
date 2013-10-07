@@ -11,6 +11,7 @@ use ZfcUserLdap\Mapper\User as UserMapperInterface;
 use ZfcUser\Options\AuthenticationOptionsInterface;
 use ZfcUserLdap\Mapper\UserHydrator;
 use Zend\Validator\EmailAddress;
+use Zend\Authentication\Exception\UnexpectedValueException as UnexpectedExc;
 
 class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
 
@@ -87,10 +88,25 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
             $this->setSatisfied(false);
             return false;
         }
+        $validator = new EmailAddress();
+        if ($validator->isValid($identity)) {
+            $ldapObj = $ldapAuthAdapter->findByEmail($identity);
+        } else {
+            $ldapObj = $ldapAuthAdapter->findByUsername($identity);
+        }
+        if (!is_array($ldapObj)){
+            
+            throw new UnexpectedExc('Ldap response is invalid returned: '.var_export($ldapObj, true));
+        }
         /* Since LDAP can change without us knowing about it we should update
          * the database with most recent details on login
          */
-        $this->updateLocalDBDetails($identity, $ldapAuthAdapter, $userObject);
+        $zulConfig = $this->serviceManager->get('ZfcUserLdap\Config');
+        if ($zulConfig['auto_insertion']['auto_update']) {
+            $this->updateLocalDBDetails($ldapObj, $userObject);
+        }
+        
+        $userObject->setRoles($this->getMapper()->getLdapRoles($ldapObj));
         // Success!
         $e->setIdentity($userObject);
 
@@ -103,21 +119,14 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
                 ->stopPropagation();
     }
 
-    protected function updateLocalDBDetails($identity, $ldapAuthAdapter, $userObject) {
-        $validator = new EmailAddress();
-        if ($validator->isValid($identity)) {
-            $ldapObj = $ldapAuthAdapter->findByEmail($identity);
-        } else {
-            $ldapObj = $ldapAuthAdapter->findByUsername($identity);
-        }
+    protected function updateLocalDBDetails($ldapObj, $userObject) {
+        
 
         if (isset($ldapObj['uid']['0'])) {
             $userObject->setUsername($ldapObj['uid']['0']);
             $userObject->setDisplayName($ldapObj['cn']['0']);
             $userObject->setEmail($ldapObj['mail']['0']);
             $userObject->setPassword(md5('HandledByLdap'));
-            $userObject->setRawLdapObj(serialize($ldapObj));
-
             $this->getMapper()->update($userObject, \NULL, $this->getMapper()->getTableName(), new UserHydrator());
         }
     }

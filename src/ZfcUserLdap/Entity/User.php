@@ -1,9 +1,11 @@
 <?php
 
 namespace ZfcUserLdap\Entity;
-use ZfcUser\Entity\UserInterface;
 
-class User implements UserInterface {
+use ZfcUser\Entity\UserInterface;
+use ZfcRbac\Identity\IdentityInterface;
+
+class User implements UserInterface, IdentityInterface {
 
     /**
      * @var int
@@ -34,11 +36,11 @@ class User implements UserInterface {
      * @var int
      */
     protected $state;
-
+    
     /**
-     * @var array
+     * @var string
      */
-    protected $rawLdapObj;
+    protected $roles;
 
     /**
      * Get id.
@@ -139,25 +141,7 @@ class User implements UserInterface {
         $this->password = $password;
         return $this;
     }
-
-    /**
-     * Get raw ldap response for the user.
-     *
-     * @return array
-     */
-    public function getRawLdapObj() {
-        return $this->rawLdapObj;
-    }
-    /**
-     * Set raw ldap response.
-     *
-     * @param array $rawLdapObj
-     * @return UserInterface
-     */
-    public function setRawLdapObj($rawLdapObj) {
-        $this->rawLdapObj = $rawLdapObj;
-    }
-
+    
     /**
      * Get state.
      *
@@ -176,6 +160,24 @@ class User implements UserInterface {
     public function setState($state) {
         $this->state = $state;
         return $this;
+    }
+
+    /**
+     * Get raw ldap response for the user.
+     *
+     * @return array
+     */
+    public function getRoles() {
+        return $this->roles;
+    }
+
+    /**
+     * Set raw ldap response.
+     * 
+     * @param string $roles
+     */
+    public function setRoles($roles) {
+        $this->roles = $roles;
     }
 
 }
