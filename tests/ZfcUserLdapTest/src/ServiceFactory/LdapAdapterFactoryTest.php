@@ -32,9 +32,6 @@ class LdapAdapterFactoryTest extends \PHPUnit_Framework_TestCase
         $this->application = $this->getApplication();
     }
 
-    /**
-     * @covers \ZfcUser\ServiceFactory\LdapAdapterFactory::createService
-     */
     public function testGetInstantiatedClassFromFactory()
     {
         $ldapAdapter = $this->application->getServiceManager()->get("ZfcUserLdap\LdapAdapter");
