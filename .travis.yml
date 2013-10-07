@@ -8,4 +8,9 @@ php:
 before_install:
  - curl -s https://getcomposer.org/installer | php
  - php composer.phar install
+ - cp config/zfcuserldap.global.php.dist tests/config/autoload/zfcuserldap.global.php
+ - cd tests
+
+script:
+ - phpunit
 
