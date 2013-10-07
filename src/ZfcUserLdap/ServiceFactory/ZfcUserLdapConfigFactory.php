@@ -10,20 +10,23 @@
  *
  * 
  */
+
 namespace ZfcUserLdap\ServiceFactory;
+
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class ZfcUserLdapConfigFactory implements FactoryInterface {
+class ZfcUserLdapConfigFactory implements FactoryInterface
+{
 
     /**
      * {@inheritDoc}
      *
      * @return array
      */
-    public function createService(ServiceLocatorInterface $serviceLocator) {
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
         $config = $serviceLocator->get('Config');
         return $config['ZfcUserLdap'];
     }
-
 }

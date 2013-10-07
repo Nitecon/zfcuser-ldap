@@ -1,13 +1,11 @@
 <?php
 
-define('REQUEST_MICROTIME', microtime(true));
-$basePath = dirname(__DIR__);
-defined('BASE_PATH') || define('BASE_PATH', $basePath);
-chdir($basePath);
+
+chdir(dirname(__DIR__));
 
 // Composer autoloading
-if (file_exists($basePath . '/vendor/autoload.php')) {
-    $loader = include $basePath . '/vendor/autoload.php';
+if (file_exists('./vendor/autoload.php')) {
+    $loader = include './vendor/autoload.php';
 }
-$loader->add('ZfcUserTest', "$basePath/tests/ZfcUserLdapTest/src/ZfcUserLdapTest");
-Zend\Mvc\Application::init(require $basePath . '/tests/config/application.config.php');
+$loader->add('ZfcUserTest', "./tests/ZfcUserLdapTest/src/ZfcUserLdapTest");
+Zend\Mvc\Application::init(require './tests/config/application.config.php');

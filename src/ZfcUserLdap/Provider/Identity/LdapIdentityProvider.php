@@ -10,11 +10,15 @@
  *
  * 
  */
+
 namespace ZfcUserLdap\Provider\Identity;
+
 use BjyAuthorize\Exception\InvalidRoleException;
 use Zend\Permissions\Acl\Role\RoleInterface;
 
-class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderInterface{
+class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderInterface
+{
+
     /**
      * @var \Zend\Authentication\AuthenticationService
      */
@@ -24,16 +28,17 @@ class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderIn
      * @var string|\Zend\Permissions\Acl\Role\RoleInterface
      */
     protected $defaultRole;
-    
     protected $config;
     protected $bjyConfig;
+
     /**
      * @param \ZfcUser\Service\User    $userService
      * @param array $config;
      * @param array $bjyConfig;
      */
-    public function __construct($authService,array $config, array $bjyConfig){
-        
+    public function __construct($authService, array $config, array $bjyConfig)
+    {
+
         $this->authService = $authService;
         $this->config = $config;
         $this->bjyConfig = $bjyConfig;
@@ -42,12 +47,13 @@ class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderIn
     /**
      * {@inheritDoc}
      */
-    public function getIdentityRoles(){
+    public function getIdentityRoles()
+    {
         $definedRoles = $this->bjyConfig['role_providers']['BjyAuthorize\Provider\Role\Config']['user']['children'];
         $roleKey = $this->config['identity_providers']['ldap_role_key'];
-        
-        
-        if (! $this->authService->hasIdentity()) {
+
+
+        if (!$this->authService->hasIdentity()) {
             return array($this->getDefaultRole());
         }
         $rawObj = $this->authService->getIdentity()->getRawLdapObj();
@@ -56,13 +62,14 @@ class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderIn
             return array($this->getDefaultRole());
         }
         $user = unserialize($rawObj);
-        if (is_null($user) || !is_array($user)){
+        if (is_null($user) || !is_array($user)) {
             return array($this->getDefaultRole());
         }
-        $roles     = array('user');
+        $roles = array('user');
         foreach ($user[$roleKey] as $role) {
-            if (isset($definedRoles[$role]))
+            if (isset($definedRoles[$role])) {
                 $roles[] = $role;
+            }
         }
         return $roles;
     }
@@ -82,7 +89,7 @@ class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderIn
      */
     public function setDefaultRole($defaultRole)
     {
-        if (! ($defaultRole instanceof RoleInterface || is_string($defaultRole))) {
+        if (!($defaultRole instanceof RoleInterface || is_string($defaultRole))) {
             throw InvalidRoleException::invalidRoleInstance($defaultRole);
         }
 

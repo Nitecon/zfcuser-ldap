@@ -10,11 +10,14 @@
  *
  * 
  */
+
 namespace ZfcUserLdap\Provider\Identity;
+
 use ZfcRbac\Identity\IdentityInterface;
 use Zend\Authentication\AuthenticationService;
 
-class ZfcRbacIdentityProvider implements IdentityInterface {
+class ZfcRbacIdentityProvider implements IdentityInterface
+{
 
     /**
      * Array of roles.
@@ -38,7 +41,8 @@ class ZfcRbacIdentityProvider implements IdentityInterface {
     /**
      * @var AuthenticationService
      */
-    public function __construct(AuthenticationService $authService, array $config) {
+    public function __construct(AuthenticationService $authService, array $config)
+    {
         $roles = array();
         $this->authService = $authService;
         $this->config = $config;
@@ -52,7 +56,7 @@ class ZfcRbacIdentityProvider implements IdentityInterface {
                     $roles = array('user');
                     foreach ($user[$roleKey] as $role) {
                         //if (isset($definedRoles[$role]))
-                            $roles[] = $role;
+                        $roles[] = $role;
                     }
                 }
             }
@@ -66,8 +70,8 @@ class ZfcRbacIdentityProvider implements IdentityInterface {
     /**
      * @return array
      */
-    public function getRoles() {
+    public function getRoles()
+    {
         return $this->roles;
     }
-
 }

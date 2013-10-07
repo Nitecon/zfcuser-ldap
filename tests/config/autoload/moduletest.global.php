@@ -10,24 +10,24 @@
  *
  * 
  */
-return 
-    array(
-        'ldap' => array(
-            'server1' => array(
-                'host' => 's0.foo.net',
-                'username' => 'CN=user1,DC=foo,DC=net',
-                'password' => 'pass1',
-                'bindRequiresDn' => true,
-                'accountDomainName' => 'foo.net',
-                'baseDn' => 'OU=Sales,DC=foo,DC=net',
-            ),
-            'server2' => array(
-                'host' => 's0.foo2.net',
-                'username' => 'CN=user1,DC=foo,DC=net',
-                'password' => 'pass1',
-                'bindRequiresDn' => true,
-                'accountDomainName' => 'foo.net',
-                'baseDn' => 'OU=Sales,DC=foo,DC=net',
-            ),
-        )
+return
+        array(
+            'ldap' => array(
+                'server1' => array(
+                    'host' => 's0.foo.net',
+                    'username' => 'CN=user1,DC=foo,DC=net',
+                    'password' => 'pass1',
+                    'bindRequiresDn' => true,
+                    'accountDomainName' => 'foo.net',
+                    'baseDn' => 'OU=Sales,DC=foo,DC=net',
+                ),
+                'server2' => array(
+                    'host' => 's0.foo2.net',
+                    'username' => 'CN=user1,DC=foo,DC=net',
+                    'password' => 'pass1',
+                    'bindRequiresDn' => true,
+                    'accountDomainName' => 'foo.net',
+                    'baseDn' => 'OU=Sales,DC=foo,DC=net',
+                ),
+            )
 );

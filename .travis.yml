@@ -14,5 +14,9 @@ before_install:
  - cd tests
 
 script:
- - phpunit
+ - phpunit --coverage-clover ./build/logs/clover.xml
+ - phpcs --standard=PSR2 ./src/ ./tests/
+
+after_script:
+  - php vendor/bin/coveralls -v
 

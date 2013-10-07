@@ -10,20 +10,24 @@
  *
  * 
  */
+
 namespace ZfcUserLdapTest\ServiceFactory;
 
 use Zend\Mvc\Application;
+
 class LdapAdapterFactoryTest extends \PHPUnit_Framework_TestCase
 {
+
     protected $service_locator;
     protected $application;
     protected $applicationConfig;
+
     /**
      * Prepare the object to be tested.
      */
     protected function setUp()
     {
-        $config = include (BASE_PATH."/tests/config/application.config.php");
+        $config = include ("./tests/config/application.config.php");
         $this->applicationConfig = $config;
         $this->application = $this->getApplication();
     }
@@ -31,13 +35,12 @@ class LdapAdapterFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers \ZfcUser\ServiceFactory\LdapAdapterFactory::createService
      */
-    
     public function testGetInstantiatedClassFromFactory()
     {
         $ldapAdapter = $this->application->getServiceManager()->get("ZfcUserLdap\LdapAdapter");
-        $this->assertEquals(get_class($ldapAdapter),'ZfcUserLdap\Adapter\Ldap');
-        
+        $this->assertEquals(get_class($ldapAdapter), 'ZfcUserLdap\Adapter\Ldap');
     }
+
     /**
      * Get the application object
      * @return \Zend\Mvc\ApplicationInterface

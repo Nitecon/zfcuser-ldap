@@ -5,7 +5,8 @@ namespace ZfcUserLdap\Entity;
 use ZfcUser\Entity\UserInterface;
 use ZfcRbac\Identity\IdentityInterface;
 
-class User implements UserInterface, IdentityInterface {
+class User implements UserInterface, IdentityInterface
+{
 
     /**
      * @var int
@@ -36,7 +37,7 @@ class User implements UserInterface, IdentityInterface {
      * @var int
      */
     protected $state;
-    
+
     /**
      * @var string
      */
@@ -47,7 +48,8 @@ class User implements UserInterface, IdentityInterface {
      *
      * @return int
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -57,7 +59,8 @@ class User implements UserInterface, IdentityInterface {
      * @param int $id
      * @return UserInterface
      */
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = (int) $id;
         return $this;
     }
@@ -67,7 +70,8 @@ class User implements UserInterface, IdentityInterface {
      *
      * @return string
      */
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
@@ -77,7 +81,8 @@ class User implements UserInterface, IdentityInterface {
      * @param string $username
      * @return UserInterface
      */
-    public function setUsername($username) {
+    public function setUsername($username)
+    {
         $this->username = $username;
         return $this;
     }
@@ -87,7 +92,8 @@ class User implements UserInterface, IdentityInterface {
      *
      * @return string
      */
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
@@ -97,7 +103,8 @@ class User implements UserInterface, IdentityInterface {
      * @param string $email
      * @return UserInterface
      */
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
         return $this;
     }
@@ -107,7 +114,8 @@ class User implements UserInterface, IdentityInterface {
      *
      * @return string
      */
-    public function getDisplayName() {
+    public function getDisplayName()
+    {
         return $this->displayName;
     }
 
@@ -117,7 +125,8 @@ class User implements UserInterface, IdentityInterface {
      * @param string $displayName
      * @return UserInterface
      */
-    public function setDisplayName($displayName) {
+    public function setDisplayName($displayName)
+    {
         $this->displayName = $displayName;
         return $this;
     }
@@ -127,7 +136,8 @@ class User implements UserInterface, IdentityInterface {
      *
      * @return string
      */
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->password;
     }
 
@@ -137,17 +147,19 @@ class User implements UserInterface, IdentityInterface {
      * @param string $password
      * @return UserInterface
      */
-    public function setPassword($password) {
+    public function setPassword($password)
+    {
         $this->password = $password;
         return $this;
     }
-    
+
     /**
      * Get state.
      *
      * @return int
      */
-    public function getState() {
+    public function getState()
+    {
         return $this->state;
     }
 
@@ -157,7 +169,8 @@ class User implements UserInterface, IdentityInterface {
      * @param int $state
      * @return UserInterface
      */
-    public function setState($state) {
+    public function setState($state)
+    {
         $this->state = $state;
         return $this;
     }
@@ -167,7 +180,8 @@ class User implements UserInterface, IdentityInterface {
      *
      * @return array
      */
-    public function getRoles() {
+    public function getRoles()
+    {
         return $this->roles;
     }
 
@@ -176,8 +190,8 @@ class User implements UserInterface, IdentityInterface {
      * 
      * @param string $roles
      */
-    public function setRoles($roles) {
+    public function setRoles($roles)
+    {
         $this->roles = $roles;
     }
-
 }

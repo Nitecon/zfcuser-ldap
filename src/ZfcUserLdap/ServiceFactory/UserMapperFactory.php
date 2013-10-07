@@ -15,9 +15,11 @@ use Zend\Stdlib\Hydrator;
 /**
  * @package    ZfcUserLdap
  */
-class UserMapperFactory implements FactoryInterface {
+class UserMapperFactory implements FactoryInterface
+{
 
-    public function createService(ServiceLocatorInterface $services) {
+    public function createService(ServiceLocatorInterface $services)
+    {
         $options = $services->get('zfcuser_module_options');
 
         $mapper = new \ZfcUserLdap\Mapper\User();
@@ -28,5 +30,4 @@ class UserMapperFactory implements FactoryInterface {
 
         return $mapper;
     }
-
 }

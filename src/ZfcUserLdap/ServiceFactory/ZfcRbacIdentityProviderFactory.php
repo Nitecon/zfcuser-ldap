@@ -16,7 +16,9 @@ namespace ZfcUserLdap\ServiceFactory;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use ZfcUserLdap\Provider\Identity\ZfcRbacIdentityProvider;
-class ZfcRbacIdentityProviderFactory implements FactoryInterface{
+
+class ZfcRbacIdentityProviderFactory implements FactoryInterface
+{
 
     /**
      * Create service
@@ -24,13 +26,13 @@ class ZfcRbacIdentityProviderFactory implements FactoryInterface{
      * @param ServiceLocatorInterface $serviceLocator
      * @return mixed
      */
-    public function createService(ServiceLocatorInterface $serviceLocator) {
-        
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
+
         $authService = $serviceLocator->get('zfcuser_auth_service');
         $config = $serviceLocator->get('ZfcUserLdap\Config');
-        
-        $provider = new ZfcRbacIdentityProvider($authService,$config);
+
+        $provider = new ZfcRbacIdentityProvider($authService, $config);
         return $provider;
     }
-
 }

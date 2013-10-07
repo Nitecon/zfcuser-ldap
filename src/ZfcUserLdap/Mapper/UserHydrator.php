@@ -7,6 +7,7 @@ use ZfcUser\Entity\UserInterface as UserEntityInterface;
 
 class UserHydrator extends ClassMethods
 {
+
     /**
      * Extract values from an object
      *
@@ -19,7 +20,7 @@ class UserHydrator extends ClassMethods
         if (!$object instanceof UserEntityInterface) {
             throw new Exception\InvalidArgumentException('$object must be an instance of ZfcUser\Entity\UserInterface');
         }
-        /* @var $object UserInterface*/
+        /* @var $object UserInterface */
         $data = parent::extract($object);
         $data = $this->mapField('id', 'user_id', $data);
         return $data;

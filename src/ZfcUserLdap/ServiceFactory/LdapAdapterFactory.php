@@ -10,23 +10,26 @@
  *
  * 
  */
+
 namespace ZfcUserLdap\ServiceFactory;
+
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class LdapAdapterFactory implements FactoryInterface {
+class LdapAdapterFactory implements FactoryInterface
+{
 
     /**
      * {@inheritDoc}
      *
      * @return array
      */
-    public function createService(ServiceLocatorInterface $serviceLocator) {
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
         $config = $serviceLocator->get('ZfcUserLdap\LdapConfig');
         $logger = $serviceLocator->get('ZfcUserLdap\Logger');
         $zulconfig = $serviceLocator->get('ZfcUserLdap\Config');
-        
-        return new \ZfcUserLdap\Adapter\Ldap($config,$logger,$zulconfig['logging']['log_enabled']);
-    }
 
+        return new \ZfcUserLdap\Adapter\Ldap($config, $logger, $zulconfig['logging']['log_enabled']);
+    }
 }
