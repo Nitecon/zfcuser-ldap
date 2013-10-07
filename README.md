@@ -12,12 +12,20 @@ Zend Framework ZfcUser Extension to provide LDAP Authentication
 ## TODO / In Progress
 - Add ability to register a user in ldap
 - Allow password resets in ldap
+- Provide an identity provider for ZfcRbac
 
 ## Rebuild notice
 If you do not feel like testing the WIP, please make sure to use the current
 release version: 1.1.0 as mentioned below in the setup for composer.  Although
 I will try to keep the master branch as stable as possible it's always
 possible that I can break your stuff.
+
+I'm also currently reworking the role provider sections and the below noted
+`raw_ldap_obj` will be obsolete shortly.  As I'm adding a provider for both
+BjyAuthorize as well as ZfcRbac to be used.  Due to ZfcRbac requiring `getRoles`
+in the user entity I will just adapt the same thing for BjyAuthorize.  On a side
+note the roles may not be inserted into the database as they have the
+possibility to change and storing them in session seems to make more sense.
 
 ## WIP
 The entire module has been re-built from scratch, I have tried my best 
