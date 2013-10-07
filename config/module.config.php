@@ -12,6 +12,7 @@ return array(
     'service_manager' => array(
         'invokables' => array(
             'ZfcUserLdap\Adapter\Ldap' => 'ZfcUserLdap\Adapter\Ldap',
+            'ZfcUserLdap\Authentication\Adapter\LdapAuth' => 'ZfcUserLdap\Authentication\Adapter\LdapAuth',
         ),
         'aliases' => array(
         ),
