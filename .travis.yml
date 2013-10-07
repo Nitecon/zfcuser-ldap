@@ -6,17 +6,15 @@ php:
   - 5.5
 
 before_install:
- - curl -s https://getcomposer.org/installer | php
- - php composer.phar install
- - php composer.phar update --prefer-source --dev
+ - composer update --prefer-source --dev
  - cp config/zfcuserldap.global.php.dist tests/config/autoload/zfcuserldap.global.php
  - mkdir data
  - mkdir data/logs
  - cd tests
 
 script:
- - phpunit --coverage-clover ./build/logs/clover.xml
- - ./vendor/bin/phpcs --standard=PSR2 ./src/ ./tests/
+ - phpunit --configuration tests/phpunit.xml --coverage-clover ./build/logs/clover.xml
+ - php vendor/bin/phpcs --standard=PSR2 ./src/ ./tests/
 
 after_script:
   - php vendor/bin/coveralls -v

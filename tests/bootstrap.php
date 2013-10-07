@@ -1,7 +1,6 @@
 <?php
 
 
-chdir(dirname(__DIR__));
 
 // Composer autoloading
 if (file_exists('./vendor/autoload.php')) {
