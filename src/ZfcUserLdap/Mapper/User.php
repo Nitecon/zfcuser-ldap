@@ -129,7 +129,7 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
             $entity->setDisplayName($ldapObject['cn']['0']);
             $entity->setEmail($ldapObject['mail']['0']);
             $entity->setPassword(md5('HandledByLdap'));
-            $entity->setRoles(getLdapRoles($ldapObject));
+            $entity->setRoles(serialize($this->getLdapRoles($ldapObject)));
             $this->insert($entity, $this->tableName, new HydratorInterface());
         }
     }

@@ -3,9 +3,8 @@
 namespace ZfcUserLdap\Entity;
 
 use ZfcUser\Entity\UserInterface;
-use ZfcRbac\Identity\IdentityInterface;
 
-class User implements UserInterface, IdentityInterface
+class User implements UserInterface
 {
 
     /**
@@ -187,7 +186,7 @@ class User implements UserInterface, IdentityInterface
 
     /**
      * Set raw ldap response.
-     * 
+     *
      * @param string $roles
      */
     public function setRoles($roles)

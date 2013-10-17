@@ -5,10 +5,10 @@
  *
  * For the full copyright and license information, please view
  * the file LICENSE.txt that was distributed with this source code.
- * 
+ *
  * @author Will Hattingh <w.hattingh@nitecon.com>
  *
- * 
+ *
  */
 
 namespace ZfcUserLdap\Provider\Identity;
@@ -56,7 +56,7 @@ class LdapIdentityProvider implements \BjyAuthorize\Provider\Identity\ProviderIn
         if (!$this->authService->hasIdentity()) {
             return array($this->getDefaultRole());
         }
-        $rawObj = $this->authService->getIdentity()->getRawLdapObj();
+        $rawObj = $this->authService->getIdentity()->getRoles();
         $data = @unserialize($rawObj);
         if ($data === false) {
             return array($this->getDefaultRole());

@@ -4,7 +4,6 @@ return array(
   'ZfcUserLdap\Module'                                        => __DIR__ . '/Module.php',
   'ZfcUserLdap\Adapter\Ldap'                                  => __DIR__ . '/src/ZfcUserLdap/Adapter/Ldap.php',
   'ZfcUserLdap\Authentication\Adapter\LdapAuth'               => __DIR__ . '/src/ZfcUserLdap/Authentication/Adapter/LdapAuth.php',
-  'ZfcUserLdap\Authentication\Exception\ExceptionInterface'   => __DIR__ . '/src/ZfcUserLdap/Authentication/Exception/RuntimeException.php',
   'ZfcUserLdap\Entity\User'                                   => __DIR__ . '/src/ZfcUserLdap/Entity/User.php',
   'ZfcUserLdap\Mapper\User'                                   => __DIR__ . '/src/ZfcUserLdap/Mapper/User.php',
   'ZfcUserLdap\Mapper\UserHydrator'                           => __DIR__ . '/src/ZfcUserLdap/Mapper/UserHydrator.php',
@@ -17,4 +16,5 @@ return array(
   'ZfcUserLdap\ServiceFactory\UserMapperFactory'              => __DIR__ . '/src/ZfcUserLdap/ServiceFactory/UserMapperFactory.php',
   'ZfcUserLdap\ServiceFactory\ZfcRbacIdentityProviderFactory' => __DIR__ . '/src/ZfcUserLdap/ServiceFactory/ZfcRbacIdentityProviderFactory.php',
   'ZfcUserLdap\ServiceFactory\ZfcUserLdapConfigFactory'       => __DIR__ . '/src/ZfcUserLdap/ServiceFactory/ZfcUserLdapConfigFactory.php',
+  'ZfcUserLdapTest\ServiceFactory\LdapAdapterFactoryTest'     => __DIR__ . '/tests/ZfcUserLdapTest/src/ServiceFactory/LdapAdapterFactoryTest.php',
 );
