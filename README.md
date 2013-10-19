@@ -24,20 +24,23 @@ release version: 1.1.0 as mentioned below in the setup for composer.  Although
 I will try to keep the master branch as stable as possible it's always
 possible that I can break your stuff.
 
-I'm also currently reworking the role provider sections and the below noted
-`raw_ldap_obj` will be obsolete shortly.  As I'm adding a provider for both
-BjyAuthorize as well as ZfcRbac to be used.  Due to ZfcRbac requiring `getRoles`
-in the user entity I will just adapt the same thing for BjyAuthorize.  On a side
-note the roles may not be inserted into the database as they have the
-possibility to change and storing them in session seems to make more sense.
+Due to ZfcRbac requiring `getRoles` in the user entity I will just adapt the 
+same thing for BjyAuthorize.  On a side note the roles may not be inserted 
+into the database as they have the possibility to change and storing them 
+in session seems to make more sense.
 
 ## WIP
+Currently the master branch is functional but without documentation,
+I will try my best to add documentation for the master branch and add
+a new release in the following week or so, however work life is not always
+forgiving but I will get it in here shortly.
+
 The entire module has been re-built from scratch, I have tried my best 
 to keep backwards compatability, however to get some of the fixes in I 
 did have to break the current release version.
 
 What breaks?  You now need to have a column in your zfcuser user table
-`raw_ldap_obj`  I currently have this set to a blob right now as my ldap user
+`roles`  I currently have this set to a blob right now as my ldap user
 does not fit within text or longtext.  Beyond that there is a few new things.
 
 Under the module (in your vendor directory) you will find a new config file 
