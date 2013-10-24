@@ -82,7 +82,7 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
             }
         }
         $ldapAuthAdapter = $this->serviceManager->get('ZfcUserLdap\LdapAdapter');
-        if (!$ldapAuthAdapter->authenticate($identity, $credential)) {
+        if ($ldapAuthAdapter->authenticate($identity, $credential) !== true) {
             // Password does not match
             $e->setCode(AuthenticationResult::FAILURE_CREDENTIAL_INVALID)
                     ->setMessages(array('Supplied credential is invalid.'));
