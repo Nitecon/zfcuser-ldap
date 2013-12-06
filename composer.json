@@ -1,9 +1,9 @@
 {
-    "name": "nitecon/zfcuser-ldap",
+    "name": "enrise/zfcuser-ldap",
     "description": "Zend Framework 2 ZfcUser LDAP Authentication",
     "type": "library",
     "keywords": ["zf2","zfcuser","ldap"],
-    "homepage": "https://github.com/Nitecon/zfcuser-ldap.git",
+    "homepage": "https://github.com/Enrise/zfcuser-ldap.git",
     "license": "New BSD License",
     "authors": [
         {
@@ -11,6 +11,12 @@
             "email": "w.hattingh@nitecon.com",
             "homepage": "http://www.nitecon.com/",
             "role": "Master"
+        },
+	{
+            "name": "Rob Quist - Enrise",
+            "email": "rob@enrise.com",
+            "homepage": "http://www.enrise.com/",
+            "role": "Additions"
         }
     ],
     "require": {
