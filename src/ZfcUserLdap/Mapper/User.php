@@ -112,6 +112,7 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
      * 
      * @return User Entity
      */
+
     public function newEntity($ldapObject)
     {
         $entity = $this->getEntity();
@@ -132,20 +133,22 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
      */
     public function updateDb($ldapObject, $userObject)
     {
-        if ($userObject == null)
+        if ($userObject == null) {
             $entity = $this->getEntity();
-        else
+        } else {
             $entity = $userObject;
+        }
         if (isset($ldapObject['uid']['0'])) {
             $entity->setUsername($ldapObject['uid']['0']);
             $entity->setDisplayName($ldapObject['cn']['0']);
             $entity->setEmail($ldapObject['mail']['0']);
             $entity->setPassword(md5('HandledByLdap'));
             $entity->setRoles(serialize($this->getLdapRoles($ldapObject)));
-            if ($userObject == null)
+            if ($userObject == null) {
                 $this->insert($entity, $this->tableName, new HydratorInterface());
-            else
+            } else {
                 $this->update($entity, null, $this->tableName, new HydratorInterface());
+            }
         }
         return $entity;
     }
@@ -163,5 +166,4 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         }
         return $roles;
     }
-
 }

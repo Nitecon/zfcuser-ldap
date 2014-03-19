@@ -43,7 +43,7 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
     {
         $userObject = null;
         $zulConfig = $this->serviceManager->get('ZfcUserLdap\Config');
-        
+
         if ($this->isSatisfied()) {
             $storage = $this->getStorage()->read();
             $e->setIdentity($storage['identity'])
@@ -75,7 +75,7 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
             throw new UnexpectedExc('Ldap response is invalid returned: ' . var_export($ldapObj, true));
         }
         // LDAP auth Success!
-        
+
         $fields = $this->getOptions()->getAuthIdentityFields();
 
         // Create the user object entity via the LDAP object
@@ -85,17 +85,20 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
         // then will create or update user depending on results and settings
         if ($zulConfig['auto_insertion']['enabled']) {
             $validator = new EmailAddress();
-            if ($validator->isValid($identity))
+            if ($validator->isValid($identity)) {
                 $userDbObject = $this->getMapper()->findByEmail($identity);
-            else
+            } else {
                 $userDbObject = $this->getMapper()->findByUsername($identity);
+            }
 
-            if ($userDbObject === false)
-                $userObject = $this->getMapper()->updateDb($ldapObj, null);
-            elseif ($zulConfig['auto_insertion']['auto_update'])
+            if ($userDbObject === false) {
+                $userObject = $this->getMapper ()->updateDb ($ldapObj, null);
+                } elseif {
+                ($zulConfig['auto_insertion']['auto_update'])
                 $userObject = $this->getMapper()->updateDb($ldapObj, $userDbObject);
-            else
+            } else {
                 $userObject = $userDbObject;
+            }
         }
 
         // Something happened that should never happen
@@ -117,7 +120,7 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
                 return false;
             }
         }
-        
+
         // Set the roles for stuff like ZfcRbac
         $userObject->setRoles($this->getMapper()->getLdapRoles($ldapObj));
         // Success!
@@ -206,5 +209,4 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
         $this->entity = new $entityClass;
         return $this->entity;
     }
-
 }
