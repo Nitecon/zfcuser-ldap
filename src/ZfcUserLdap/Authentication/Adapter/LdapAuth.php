@@ -13,7 +13,8 @@ use ZfcUserLdap\Mapper\UserHydrator;
 use Zend\Validator\EmailAddress;
 use Zend\Authentication\Exception\UnexpectedValueException as UnexpectedExc;
 
-class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
+class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
+{
 
     /**
      * @var UserMapperInterface
@@ -38,7 +39,8 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
     /** @var ZfcUserLdap\Entity\User */
     protected $entity;
 
-    public function authenticate(AuthEvent $e) {
+    public function authenticate(AuthEvent $e)
+    {
 
 
 
@@ -140,7 +142,8 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
      *
      * @return UserMapperInterface
      */
-    public function getMapper() {
+    public function getMapper()
+    {
         if (null === $this->mapper) {
             $this->mapper = $this->getServiceManager()->get('ZfcUserLdap\Mapper');
         }
@@ -153,7 +156,8 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
      * @param UserMapperInterface $mapper
      * @return LdapAuth
      */
-    public function setMapper(UserMapperInterface $mapper) {
+    public function setMapper(UserMapperInterface $mapper)
+    {
         $this->mapper = $mapper;
         return $this;
     }
@@ -163,7 +167,8 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
      *
      * @return ServiceManager
      */
-    public function getServiceManager() {
+    public function getServiceManager()
+    {
         return $this->serviceManager;
     }
 
@@ -173,21 +178,24 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
      * @param ServiceManager $locator
      * @return void
      */
-    public function setServiceManager(ServiceManager $serviceManager) {
+    public function setServiceManager(ServiceManager $serviceManager)
+    {
         $this->serviceManager = $serviceManager;
     }
 
     /**
      * @param AuthenticationOptionsInterface $options
      */
-    public function setOptions(AuthenticationOptionsInterface $options) {
+    public function setOptions(AuthenticationOptionsInterface $options)
+    {
         $this->options = $options;
     }
 
     /**
      * @return AuthenticationOptionsInterface
      */
-    public function getOptions() {
+    public function getOptions()
+    {
         if (!$this->options instanceof AuthenticationOptionsInterface) {
             $this->setOptions($this->getServiceManager()->get('zfcuser_module_options'));
         }
@@ -197,7 +205,8 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface {
     /**
      * @return AuthenticationOptionsInterface
      */
-    public function getEntity() {
+    public function getEntity()
+    {
         $entityClass = $this->getOptions()->getUserEntityClass();
         $this->entity = new $entityClass;
         return $this->entity;

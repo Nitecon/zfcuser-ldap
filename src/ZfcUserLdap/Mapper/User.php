@@ -8,11 +8,13 @@ use ZfcUserLdap\Mapper\UserHydrator as HydratorInterface;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 use Zend\ServiceManager\ServiceManager;
 
-class User extends AbstractUserMapper implements UserInterface, ServiceManagerAwareInterface {
+class User extends AbstractUserMapper implements UserInterface, ServiceManagerAwareInterface
+{
 
     protected $tableName = 'user';
 
-    public function findByEmail($email) {
+    public function findByEmail($email)
+    {
         $select = $this->getSelect()->where(array('email' => $email));
         $entity = $this->select($select, $this->getEntity(), new HydratorInterface())->current();
         if (is_object($entity) && strlen($entity->getUsername()) > 0) {
@@ -27,7 +29,8 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         return $entity;
     }
 
-    public function findByUsername($username) {
+    public function findByUsername($username)
+    {
         $select = $this->getSelect()->where(array('username' => $username));
         $entity = $this->select($select, $this->getEntity(), new HydratorInterface())->current();
         if (is_object($entity) && strlen($entity->getUsername()) > 0) {
@@ -42,28 +45,33 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         return $entity;
     }
 
-    public function findById($id) {
+    public function findById($id)
+    {
         $select = $this->getSelect()->where(array('user_id' => $id));
         $entity = $this->select($select)->current();
         $this->getEventManager()->trigger('find', $this, array('entity' => $entity));
         return $entity;
     }
 
-    public function getTableName() {
+    public function getTableName()
+    {
         return $this->tableName;
     }
 
-    public function setTableName($tableName) {
+    public function setTableName($tableName)
+    {
         $this->tableName = $tableName;
     }
 
-    public function insert($entity, $tableName = null, HydratorInterface $hydrator = null) {
+    public function insert($entity, $tableName = null, HydratorInterface $hydrator = null)
+    {
         $result = parent::insert($entity, $tableName, $hydrator);
         $entity->setId($result->getGeneratedValue());
         return $result;
     }
 
-    public function update($entity, $where = null, $tableName = null, HydratorInterface $hydrator = null) {
+    public function update($entity, $where = null, $tableName = null, HydratorInterface $hydrator = null)
+    {
         if (!$where) {
             $where = 'user_id = ' . $entity->getId();
         }
@@ -76,7 +84,8 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
      *
      * @return ServiceManager
      */
-    public function getServiceManager() {
+    public function getServiceManager()
+    {
         return $this->serviceManager;
     }
 
@@ -86,17 +95,20 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
      * @param ServiceManager $locator
      * @return void
      */
-    public function setServiceManager(ServiceManager $serviceManager) {
+    public function setServiceManager(ServiceManager $serviceManager)
+    {
         $this->serviceManager = $serviceManager;
     }
 
-    public function getEntity() {
+    public function getEntity()
+    {
         $options = $this->getServiceManager()->get('zfcuser_module_options');
         $entityClass = $options->getUserEntityClass();
         return new $entityClass;
     }
 
-    public function newEntity($ldapObject) {
+    public function newEntity($ldapObject)
+    {
         $entity = $this->getEntity();
         if (isset($ldapObject['uid']['0'])) {
             $entity->setUsername($ldapObject['uid']['0']);
@@ -108,7 +120,8 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         return $entity;
     }
 
-    public function updateDb($ldapObject, $userObject) {
+    public function updateDb($ldapObject, $userObject)
+    {
         if ($userObject == null)
             $entity = $this->getEntity();
         else
@@ -127,7 +140,8 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         return $entity;
     }
 
-    public function getLdapRoles($ldapObject) {
+    public function getLdapRoles($ldapObject)
+    {
         $roles = array();
         $config = $this->getServiceManager()->get('ZfcUserLdap\Config');
         $roleKey = $config['identity_providers']['ldap_role_key'];
