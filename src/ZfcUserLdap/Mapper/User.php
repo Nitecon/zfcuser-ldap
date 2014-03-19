@@ -107,6 +107,11 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         return new $entityClass;
     }
 
+    /*
+     * Creates a new User Entity
+     * 
+     * @return User Entity
+     */
     public function newEntity($ldapObject)
     {
         $entity = $this->getEntity();
@@ -120,6 +125,11 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         return $entity;
     }
 
+    /**
+     * Insert or Update DB entry depending if a User Object is set.
+     * 
+     * @return User Entity
+     */
     public function updateDb($ldapObject, $userObject)
     {
         if ($userObject == null)

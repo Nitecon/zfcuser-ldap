@@ -41,10 +41,9 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
 
     public function authenticate(AuthEvent $e)
     {
-
-
-
-
+        $userObject = null;
+        $zulConfig = $this->serviceManager->get('ZfcUserLdap\Config');
+        
         if ($this->isSatisfied()) {
             $storage = $this->getStorage()->read();
             $e->setIdentity($storage['identity'])
@@ -53,9 +52,11 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
             return;
         }
 
+        // Get POST values
         $identity = $e->getRequest()->getPost()->get('identity');
         $credential = $e->getRequest()->getPost()->get('credential');
 
+        // Start auth against LDAP
         $ldapAuthAdapter = $this->serviceManager->get('ZfcUserLdap\LdapAdapter');
         if ($ldapAuthAdapter->authenticate($identity, $credential) !== true) {
             // Password does not match
@@ -73,22 +74,21 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
         if (!is_array($ldapObj)) {
             throw new UnexpectedExc('Ldap response is invalid returned: ' . var_export($ldapObj, true));
         }
-        $userObject = null;
-
-        $zulConfig = $this->serviceManager->get('ZfcUserLdap\Config');
-        //$credential = $this->preProcessCredential($credential);
-        // Cycle through the configured identity sources and test each
+        // LDAP auth Success!
+        
         $fields = $this->getOptions()->getAuthIdentityFields();
 
+        // Create the user object entity via the LDAP object
         $userObject = $this->getMapper()->newEntity($ldapObj);
 
+        // If auto insertion is on, we will check against DB for existing user,
+        // then will create or update user depending on results and settings
         if ($zulConfig['auto_insertion']['enabled']) {
             $validator = new EmailAddress();
             if ($validator->isValid($identity))
                 $userDbObject = $this->getMapper()->findByEmail($identity);
             else
                 $userDbObject = $this->getMapper()->findByUsername($identity);
-
 
             if ($userDbObject === false)
                 $userObject = $this->getMapper()->updateDb($ldapObj, null);
@@ -98,7 +98,7 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
                 $userObject = $userDbObject;
         }
 
-
+        // Something happened that should never happen
         if (!$userObject) {
             $e->setCode(AuthenticationResult::FAILURE_IDENTITY_NOT_FOUND)
                     ->setMessages(array('A record with the supplied identity could not be found.'));
@@ -106,6 +106,8 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
             return false;
         }
 
+        // We don't control state, however if someone manually alters
+        // the DB, this will throw the code then
         if ($this->getOptions()->getEnableUserState()) {
             // Don't allow user to login if state is not in allowed list
             if (!in_array($userObject->getState(), $this->getOptions()->getAllowedLoginStates())) {
@@ -115,15 +117,8 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
                 return false;
             }
         }
-
-        /* Since LDAP can change without us knowing about it we should update
-         * the database with most recent details on login
-         */
-        //$zulConfig = $this->serviceManager->get('ZfcUserLdap\Config');
-        //if ($zulConfig['auto_insertion']['auto_update']) {
-        //    $this->updateLocalDBDetails($ldapObj, $userObject);
-        //}
-
+        
+        // Set the roles for stuff like ZfcRbac
         $userObject->setRoles($this->getMapper()->getLdapRoles($ldapObj));
         // Success!
         $e->setIdentity($userObject);
