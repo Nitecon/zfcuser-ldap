@@ -19,13 +19,6 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         $entity = $this->select($select, $this->getEntity(), new HydratorInterface())->current();
         if (is_object($entity) && strlen($entity->getUsername()) > 0) {
             $this->getEventManager()->trigger('find', $this, array('entity' => $entity));
-        } else {
-            $zulConfig = $this->getServiceManager()->get('ZfcUserLdap\Config');
-            if ($zulConfig['auto_insertion']['enabled']) {
-                $ldapAdapter = $this->getServiceManager()->get('ZfcUserLdap\LdapAdapter');
-                $ldapObject = $ldapAdapter->findByEmail($email);
-                $this->newEntity($ldapObject);
-            }
         }
         /* Now we select again so that it provides us with the ID as well
          * as assurance that the user made it into the database
@@ -42,13 +35,6 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         $entity = $this->select($select, $this->getEntity(), new HydratorInterface())->current();
         if (is_object($entity) && strlen($entity->getUsername()) > 0) {
             $this->getEventManager()->trigger('find', $this, array('entity' => $entity));
-        } else {
-            $zulConfig = $this->getServiceManager()->get('ZfcUserLdap\Config');
-            if ($zulConfig['auto_insertion']['enabled']) {
-                $ldapAdapter = $this->getServiceManager()->get('ZfcUserLdap\LdapAdapter');
-                $ldapObject = $ldapAdapter->findByUsername($username);
-                $this->newEntity($ldapObject);
-            }
         }
         /* Now we select again so that it provides us with the ID as well
          * as assurance that the user made it into the database
@@ -121,6 +107,12 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
         return new $entityClass;
     }
 
+    /*
+     * Creates a new User Entity
+     * 
+     * @return User Entity
+     */
+
     public function newEntity($ldapObject)
     {
         $entity = $this->getEntity();
@@ -130,8 +122,35 @@ class User extends AbstractUserMapper implements UserInterface, ServiceManagerAw
             $entity->setEmail($ldapObject['mail']['0']);
             $entity->setPassword(md5('HandledByLdap'));
             $entity->setRoles(serialize($this->getLdapRoles($ldapObject)));
-            $this->insert($entity, $this->tableName, new HydratorInterface());
         }
+        return $entity;
+    }
+
+    /**
+     * Insert or Update DB entry depending if a User Object is set.
+     * 
+     * @return User Entity
+     */
+    public function updateDb($ldapObject, $userObject)
+    {
+        if ($userObject == null) {
+            $entity = $this->getEntity();
+        } else {
+            $entity = $userObject;
+        }
+        if (isset($ldapObject['uid']['0'])) {
+            $entity->setUsername($ldapObject['uid']['0']);
+            $entity->setDisplayName($ldapObject['cn']['0']);
+            $entity->setEmail($ldapObject['mail']['0']);
+            $entity->setPassword(md5('HandledByLdap'));
+            $entity->setRoles(serialize($this->getLdapRoles($ldapObject)));
+            if ($userObject == null) {
+                $this->insert($entity, $this->tableName, new HydratorInterface());
+            } else {
+                $this->update($entity, null, $this->tableName, new HydratorInterface());
+            }
+        }
+        return $entity;
     }
 
     public function getLdapRoles($ldapObject)

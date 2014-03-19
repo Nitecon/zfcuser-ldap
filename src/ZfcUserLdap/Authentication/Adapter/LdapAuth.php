@@ -41,6 +41,9 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
 
     public function authenticate(AuthEvent $e)
     {
+        $userObject = null;
+        $zulConfig = $this->serviceManager->get('ZfcUserLdap\Config');
+
         if ($this->isSatisfied()) {
             $storage = $this->getStorage()->read();
             $e->setIdentity($storage['identity'])
@@ -49,38 +52,11 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
             return;
         }
 
+        // Get POST values
         $identity = $e->getRequest()->getPost()->get('identity');
         $credential = $e->getRequest()->getPost()->get('credential');
-        //$credential = $this->preProcessCredential($credential);
 
-        $userObject = null;
-        // Cycle through the configured identity sources and test each
-        $fields = $this->getOptions()->getAuthIdentityFields();
-        if (in_array('email', $fields)) {
-            $validator = new EmailAddress();
-            if ($validator->isValid($identity)) {
-                $userObject = $this->getMapper()->findByEmail($identity);
-            } else {
-                $userObject = $this->getMapper()->findByUsername($identity);
-            }
-        }
-
-        if (!$userObject) {
-            $e->setCode(AuthenticationResult::FAILURE_IDENTITY_NOT_FOUND)
-                    ->setMessages(array('A record with the supplied identity could not be found.'));
-            $this->setSatisfied(false);
-            return false;
-        }
-
-        if ($this->getOptions()->getEnableUserState()) {
-            // Don't allow user to login if state is not in allowed list
-            if (!in_array($userObject->getState(), $this->getOptions()->getAllowedLoginStates())) {
-                $e->setCode(AuthenticationResult::FAILURE_UNCATEGORIZED)
-                        ->setMessages(array('A record with the supplied identity is not active.'));
-                $this->setSatisfied(false);
-                return false;
-            }
-        }
+        // Start auth against LDAP
         $ldapAuthAdapter = $this->serviceManager->get('ZfcUserLdap\LdapAdapter');
         if ($ldapAuthAdapter->authenticate($identity, $credential) !== true) {
             // Password does not match
@@ -96,17 +72,56 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
             $ldapObj = $ldapAuthAdapter->findByUsername($identity);
         }
         if (!is_array($ldapObj)) {
-
             throw new UnexpectedExc('Ldap response is invalid returned: ' . var_export($ldapObj, true));
         }
-        /* Since LDAP can change without us knowing about it we should update
-         * the database with most recent details on login
-         */
-        $zulConfig = $this->serviceManager->get('ZfcUserLdap\Config');
-        if ($zulConfig['auto_insertion']['auto_update']) {
-            $this->updateLocalDBDetails($ldapObj, $userObject);
+        // LDAP auth Success!
+
+        $fields = $this->getOptions()->getAuthIdentityFields();
+
+        // Create the user object entity via the LDAP object
+        $userObject = $this->getMapper()->newEntity($ldapObj);
+
+        // If auto insertion is on, we will check against DB for existing user,
+        // then will create or update user depending on results and settings
+        if ($zulConfig['auto_insertion']['enabled']) {
+            $validator = new EmailAddress();
+            if ($validator->isValid($identity)) {
+                $userDbObject = $this->getMapper()->findByEmail($identity);
+            } else {
+                $userDbObject = $this->getMapper()->findByUsername($identity);
+            }
+
+            if ($userDbObject === false) {
+                $userObject = $this->getMapper ()->updateDb ($ldapObj, null);
+                } elseif {
+                ($zulConfig['auto_insertion']['auto_update'])
+                $userObject = $this->getMapper()->updateDb($ldapObj, $userDbObject);
+            } else {
+                $userObject = $userDbObject;
+            }
         }
 
+        // Something happened that should never happen
+        if (!$userObject) {
+            $e->setCode(AuthenticationResult::FAILURE_IDENTITY_NOT_FOUND)
+                    ->setMessages(array('A record with the supplied identity could not be found.'));
+            $this->setSatisfied(false);
+            return false;
+        }
+
+        // We don't control state, however if someone manually alters
+        // the DB, this will throw the code then
+        if ($this->getOptions()->getEnableUserState()) {
+            // Don't allow user to login if state is not in allowed list
+            if (!in_array($userObject->getState(), $this->getOptions()->getAllowedLoginStates())) {
+                $e->setCode(AuthenticationResult::FAILURE_UNCATEGORIZED)
+                        ->setMessages(array('A record with the supplied identity is not active.'));
+                $this->setSatisfied(false);
+                return false;
+            }
+        }
+
+        // Set the roles for stuff like ZfcRbac
         $userObject->setRoles($this->getMapper()->getLdapRoles($ldapObj));
         // Success!
         $e->setIdentity($userObject);
@@ -118,30 +133,6 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
         $e->setCode(AuthenticationResult::SUCCESS)
                 ->setMessages(array('Authentication successful.'))
                 ->stopPropagation();
-    }
-
-    protected function updateLocalDBDetails($ldapObj, $userObject)
-    {
-
-
-        if (isset($ldapObj['uid']['0'])) {
-            $userObject->setUsername($ldapObj['uid']['0']);
-            $userObject->setDisplayName($ldapObj['cn']['0']);
-            $userObject->setEmail($ldapObj['mail']['0']);
-            $userObject->setPassword(md5('HandledByLdap'));
-            $this->getMapper()->update($userObject, null, $this->getMapper()->getTableName(), new UserHydrator());
-        }
-    }
-
-    protected function updateUserPasswordHash($userObject, $password, $bcrypt)
-    {
-        $hash = explode('$', $userObject->getPassword());
-        if ($hash[2] === $bcrypt->getCost()) {
-            return;
-        }
-        $userObject->setPassword($bcrypt->create($password));
-        $this->getMapper()->update($userObject);
-        return $this;
     }
 
     /**
