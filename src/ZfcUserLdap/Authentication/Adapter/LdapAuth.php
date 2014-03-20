@@ -92,9 +92,8 @@ class LdapAuth extends AbstractAdapter implements ServiceManagerAwareInterface
             }
 
             if ($userDbObject === false) {
-                $userObject = $this->getMapper ()->updateDb ($ldapObj, null);
-                } elseif {
-                ($zulConfig['auto_insertion']['auto_update'])
+                $userObject = $this->getMapper()->updateDb($ldapObj, null);
+            } elseif ($zulConfig['auto_insertion']['auto_update']) {
                 $userObject = $this->getMapper()->updateDb($ldapObj, $userDbObject);
             } else {
                 $userObject = $userDbObject;
